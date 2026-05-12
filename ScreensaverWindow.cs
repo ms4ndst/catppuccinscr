@@ -8,12 +8,12 @@ namespace CatppuccinCoast;
 public sealed class SceneHost : FrameworkElement
 {
     readonly DrawingVisual _visual = new();
-    readonly CoastScene    _scene;
+    readonly IScene        _scene;
     readonly double        _initW, _initH;
     double                 _pixelsPerDip = 1.0;
     DateTime               _lastFrame    = DateTime.UtcNow;
 
-    public SceneHost(CoastScene scene, double w, double h)
+    public SceneHost(IScene scene, double w, double h)
     {
         _scene = scene; _initW = w; _initH = h;
         AddVisualChild(_visual);
@@ -69,9 +69,10 @@ public sealed class ScreensaverWindow : Window
     void OnLoaded(object s, RoutedEventArgs e)
     {
         _lastMouse = Mouse.GetPosition(this);
-        var scene  = new CoastScene(AppSettings.Load(), ActualWidth, ActualHeight);
-        _host      = new SceneHost(scene, ActualWidth, ActualHeight);
-        Content    = _host;
+        var settings = AppSettings.Load();
+        var scene    = SceneFactory.Create(settings, ActualWidth, ActualHeight);
+        _host        = new SceneHost(scene, ActualWidth, ActualHeight);
+        Content      = _host;
     }
 
     void OnMouseMove(object s, MouseEventArgs e)

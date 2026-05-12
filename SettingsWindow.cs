@@ -17,13 +17,14 @@ public sealed class SettingsWindow : Window
 
     readonly AppSettings _s = AppSettings.Load();
 
-    string _flavor;
+    string _scene, _flavor;
     string _tod, _clockPos, _clockFmt, _starDensity, _waveLayers, _catSize;
     double _waveSpeed;
     bool   _clock, _aurora, _shooting, _foam, _bio, _lighthouse, _rain;
 
     public SettingsWindow()
     {
+        _scene       = _s.Scene;
         _flavor      = _s.Flavor;
         _tod         = _s.TimeOfDay;
         _clockPos    = _s.ClockPos;
@@ -64,11 +65,15 @@ public sealed class SettingsWindow : Window
         root.Children.Add(BuildHeader());
         root.Children.Add(Divider());
 
+        root.Children.Add(Section("SCENE",       ChoiceRow(
+            ["Coast", "Forest", "Peaks", "Lofi"], _scene,
+            ["coast", "forest", "peaks", "lofi"], v => _scene = v)));
+        root.Children.Add(Divider());
         root.Children.Add(Section("FLAVOR",      BuildFlavorRow()));
         root.Children.Add(Divider());
         root.Children.Add(Section("TIME OF DAY", ChoiceRow(
-            ["Night", "Dusk", "Day"], _tod,
-            ["night", "dusk", "day"], v => _tod = v)));
+            ["Auto", "Night", "Morning", "Day", "Dusk"], _tod,
+            ["auto", "night", "morning", "day", "dusk"], v => _tod = v)));
         root.Children.Add(Divider());
         root.Children.Add(Section("FEATURES",    BuildToggles()));
         root.Children.Add(Divider());
@@ -240,6 +245,18 @@ public sealed class SettingsWindow : Window
         var panel  = new UniformGrid { Columns = labels.Length };
         string cur = selected;
 
+        void RefreshAll()
+        {
+            for (int j = 0; j < panels.Length; j++)
+            {
+                bool active = keys[j] == cur;
+                panels[j].Background      = Br(active ? Ui.Surface1 : Ui.Surface0);
+                panels[j].BorderThickness = new Thickness(active ? 2 : 1);
+                panels[j].BorderBrush     = Br(active ? Ui.Lavender : Ui.Surface2);
+                ((TextBlock)panels[j].Child).Foreground = Br(active ? Ui.Text : Ui.Subtext0);
+            }
+        }
+
         for (int i = 0; i < labels.Length; i++)
         {
             var lbl = TB(labels[i], Ui.Subtext0, 13);
@@ -251,22 +268,11 @@ public sealed class SettingsWindow : Window
             panels[i] = b;
 
             string key = keys[i];
-            void RefreshAll()
-            {
-                for (int j = 0; j < panels.Length; j++)
-                {
-                    bool active = keys[j] == cur;
-                    panels[j].Background      = Br(active ? Ui.Surface1 : Ui.Surface0);
-                    panels[j].BorderThickness = new Thickness(active ? 2 : 1);
-                    panels[j].BorderBrush     = Br(active ? Ui.Lavender : Ui.Surface2);
-                    ((TextBlock)panels[j].Child).Foreground = Br(active ? Ui.Text : Ui.Subtext0);
-                }
-            }
-            RefreshAll();
-
             b.MouseDown += (_, _) => { cur = key; setter(key); RefreshAll(); };
             panel.Children.Add(b);
         }
+
+        RefreshAll();
         return panel;
     }
 
@@ -288,6 +294,7 @@ public sealed class SettingsWindow : Window
         btn.MouseLeave += (_, _) => btn.Background = Br(Ui.Lavender);
         btn.MouseDown  += (_, _) =>
         {
+            _s.Scene         = _scene;
             _s.Flavor        = _flavor;
             _s.TimeOfDay     = _tod;
             _s.ClockPos      = _clockPos;

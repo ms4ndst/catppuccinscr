@@ -7,6 +7,7 @@ namespace CatppuccinCoast;
 public sealed class AppSettings
 {
     // Existing
+    public string Scene        { get; set; } = "coast";     // coast | forest | peaks | lofi
     public string Flavor       { get; set; } = "mocha";
     public bool   ShowClock    { get; set; } = true;
     public bool   ShowAurora   { get; set; } = true;
@@ -16,7 +17,24 @@ public sealed class AppSettings
     public string CatSize      { get; set; } = "medium";
 
     // New
-    public string TimeOfDay    { get; set; } = "night";        // night | dusk | day
+    public string TimeOfDay    { get; set; } = "auto";         // auto | night | morning | dusk | day
+
+    /// <summary>Resolves "auto" to a concrete time-of-day based on the system clock.</summary>
+    public string EffectiveTimeOfDay
+    {
+        get
+        {
+            if (TimeOfDay != "auto") return TimeOfDay;
+            int h = DateTime.Now.Hour;
+            return h switch
+            {
+                >= 6 and < 10  => "morning",
+                >= 10 and < 17 => "day",
+                >= 17 and < 21 => "dusk",
+                _              => "night",
+            };
+        }
+    }
     public string ClockPos     { get; set; } = "bottom-right"; // bottom-right | bottom-left | top-right | top-left
     public string ClockFormat  { get; set; } = "24h";          // 24h | 12h
     public string StarDensity  { get; set; } = "normal";       // sparse | normal | dense

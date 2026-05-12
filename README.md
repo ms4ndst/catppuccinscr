@@ -1,104 +1,121 @@
 # Catppuccin Coast Screensaver
 
-A Windows screensaver featuring a coastal night scene built with the
-[Catppuccin Mocha](https://github.com/catppuccin/catppuccin) color palette.
+A Windows screensaver built with the
+[Catppuccin](https://github.com/catppuccin/catppuccin) pastel color palette.
+Choose from four animated scenes, all four Catppuccin flavors, and five
+time-of-day moods — or let it follow the system clock automatically.
 
-## Scene
+## Scenes
 
-| Feature              | Description                                                   |
-|----------------------|---------------------------------------------------------------|
-| Night sky            | Gradient from Crust → Base, 220 twinkling stars               |
-| Shooting stars       | 3 concurrent with fade trail                                  |
-| Crescent moon        | Yellow body with Lavender glow, slowly pulses                 |
-| Aurora borealis      | 4 sinusoidal bands in Mauve/Teal/Green/Lavender               |
-| Ocean waves          | 5 depth layers, Sky/Sapphire/Blue/Teal, double-sine motion    |
-| Moonlight reflection | 14 shimmering streaks on the water surface                    |
-| Seafoam particles    | 90 foam dots riding the front wave, drifting upward           |
-| Distant lights       | 2 lighthouse-style blinks on the horizon                      |
-| Clock overlay        | Current time + date, bottom-right, Catppuccin Text color      |
+### Coast (default)
+Coastal scene with layered ocean waves, crescent moon, aurora borealis,
+lighthouse beam, bioluminescent glow, seafoam particles, distant lights, and a
+floating cat mascot.
+
+### Firefly Forest
+A tranquil forest clearing with three layers of procedural tree silhouettes,
+60 pulsing firefly particles (Green/Yellow/Peach/Teal), a still pond with
+ripple reflections, and drifting mist bands.
+
+### Aurora Peaks
+Mountain range silhouettes beneath a vivid 6-band aurora. Three parallax
+mountain layers, 100 gently drifting snow particles, and fog bands between
+the ridgelines.
+
+### Lofi Room
+A cozy interior: a window showing the night sky with rain streaks, a desk with
+monitor, keyboard, mug (with rising steam), potted plant, and a cat silhouette
+with glowing blinking eyes. String lights with catenary sag drape across the
+top in Rosewater/Flamingo/Yellow/Peach/Pink.
+
+## Time of Day
+
+| Mode    | Auto hours  | Sky palette                                       | Celestial |
+|---------|-------------|---------------------------------------------------|-----------|
+| Night   | 21:00–5:59  | Crust → Base → Surface1/Sapphire                  | Moon      |
+| Morning | 6:00–9:59   | Sky/Lavender → Rosewater/Flamingo → Peach/Yellow  | Sun       |
+| Day     | 10:00–16:59 | Sky/White → Sapphire → Teal                       | Sun       |
+| Dusk    | 17:00–20:59 | Mantle/Mauve → Peach → Yellow                     | Moon      |
+| Auto    | —           | Selects one of the above from the system clock    | —         |
+
+Stars, aurora, fireflies, bioluminescence, and shooting stars are only
+visible at night (and faintly at dusk).
+
+## Settings
+
+The screensaver has a built-in settings dialog (accessible from the Windows
+screensaver picker or via `/c`). Available options:
+
+- **Scene** — Coast, Forest, Peaks, Lofi
+- **Flavor** — Latte, Frappé, Macchiato, Mocha
+- **Time of Day** — Auto, Night, Morning, Day, Dusk
+- **Features** — Toggle clock, aurora, shooting stars, seafoam, bioluminescence, lighthouse, rain
+- **Wave Speed** — Calm, Normal, Stormy (rain only appears in Stormy)
+- **Wave Layers** — Few (3), Normal (5), Many (7)
+- **Star Density** — Sparse, Normal, Dense
+- **Cat Size** — Small, Medium, Large
+- **Clock** — 24h / 12h format; four corner positions
+
+Settings are saved to `%AppData%\CatppuccinCoast\settings.json`.
 
 ## Files
 
 ```
 catppuccinscr/
-├── catppuccin_coast.py     Source code
-├── catppuccin_coast.spec   PyInstaller build spec
-├── build.ps1               Build script (compile → .scr)
-├── install.ps1             Install script (copy to System32 + set registry)
-├── dist/
-│   └── catppuccin_coast.scr  Ready-to-install screensaver (~28 MB)
-├── MOCKUP.md               Design mock-up with palette table
-└── README.md               This file
+├── CoastScene.cs          Coast scene + shared visual elements
+├── ForestScene.cs         Firefly Forest scene
+├── PeaksScene.cs          Aurora Peaks scene
+├── LofiScene.cs           Lofi Room scene
+├── IScene.cs              Scene interface
+├── SceneFactory.cs        Scene selector
+├── Palettes.cs            All 4 Catppuccin flavors (26 colors each)
+├── AppSettings.cs         Settings model + JSON persistence
+├── SettingsWindow.cs      WPF settings dialog
+├── ScreensaverWindow.cs   Fullscreen host + SceneHost renderer
+├── Program.cs             Entry point (/s, /c, /p modes)
+├── NativeMethods.cs       Win32 interop
+├── CatppuccinCoast.csproj .NET 10 WPF project
+├── assets/
+│   └── catppuccin_cat.png Cat mascot sprite
+├── build_cs.ps1           Build script (dotnet publish → dist_cs/)
+├── install.ps1            Install script (copy + registry, run as Admin)
+├── MOCKUP.md              Original design mock-up
+└── README.md              This file
 ```
 
-## Quick Install (pre-built)
+## Quick Install
 
 1. Open PowerShell **as Administrator**
 2. Navigate to this folder
-3. Run:
+3. Build and install:
    ```powershell
+   .\build_cs.ps1
    .\install.ps1
    ```
-   This copies the `.scr` to `C:\Windows\System32\` and configures the
-   registry to activate it after **5 minutes** of inactivity.
-
-## Manual Install
-
-If you prefer full control:
-
-```powershell
-# Copy the screensaver
-Copy-Item dist\catppuccin_coast.scr "$env:SystemRoot\System32\" -Force
-
-# Open screensaver picker and choose it from the list
-Start-Process "control.exe" "desk.cpl,,@screensaver"
-```
-
-Then select **catppuccin_coast** from the drop-down.
+   This publishes to `dist_cs\`, copies files to
+   `C:\Program Files\CatppuccinCoast\`, and sets the registry to activate
+   the screensaver after **5 minutes** of inactivity.
 
 ## Preview Without Installing
 
 ```powershell
-# Full-screen preview (press any key to exit)
-& "dist\catppuccin_coast.scr" /s
+# Full-screen (press any key / move mouse to exit)
+& "dist_cs\catppuccin_coast.exe" /s
 
-# Config dialog
-& "dist\catppuccin_coast.scr" /c
+# Settings dialog
+& "dist_cs\catppuccin_coast.exe" /c
 ```
 
 ## Build From Source
 
-Requirements:
+Requirements: [.NET 10 SDK](https://dotnet.microsoft.com/download)
+
 ```powershell
-pip install pygame-ce pyinstaller
+.\build_cs.ps1
 ```
 
-Build:
-```powershell
-.\build.ps1
-```
-
-The script runs PyInstaller and renames the output `.exe` to `.scr`.
-
-## Customization
-
-Open `catppuccin_coast.py` and adjust the constants at the top of the file:
-
-| Variable          | Default | Effect                                  |
-|-------------------|---------|-----------------------------------------|
-| `Stars` count     | 220     | Number of stars in the sky              |
-| `ShootingStar`    | 3       | Concurrent shooting stars               |
-| Wave `amplitude`  | 14–30   | Wave height per layer                   |
-| Wave `speed`      | 0.35–1  | Wave animation speed per layer          |
-| Aurora `alpha`    | 18–45   | Aurora intensity (increase for vivid)   |
-| `Foam` count      | 90      | Number of foam particles                |
-| Clock font size   | 7.2% h  | Proportional to screen height           |
-
-To switch flavors, replace the palette constants at the top of the file with
-the hex values from any of the four Catppuccin flavors (Latte, Frappé,
-Macchiato, Mocha). The full palette is in `MOCKUP.md`.
-
-After editing, rebuild with `.\build.ps1` and re-run `.\install.ps1`.
+This runs `dotnet publish` targeting `win-x64` (framework-dependent) and
+outputs to `dist_cs\`.
 
 ## Compatibility
 
@@ -106,9 +123,8 @@ After editing, rebuild with `.\build.ps1` and re-run `.\install.ps1`.
 |-----------------|----------|
 | Windows 11      | Tested   |
 | Windows 10      | Expected |
-| Windows 8.1     | Expected |
 
-Requires no runtime dependencies — everything is bundled in the `.scr` file.
+Requires the .NET 10 runtime (framework-dependent deployment).
 
 ## License
 

@@ -168,7 +168,7 @@ sealed class CelestialBody
 
     public void Draw(DrawingContext dc)
     {
-        if (_timeOfDay == "day") DrawSun(dc);
+        if (_timeOfDay is "day" or "morning") DrawSun(dc);
         else DrawMoon(dc);
     }
 
@@ -640,6 +640,12 @@ static class Background
             mid = Palettes.Lerp(p.Sky,     p.Sapphire,   0.35);
             hor = Palettes.Lerp(p.Sapphire, p.Teal,      0.25);
         }
+        else if (tod == "morning")
+        {
+            top = Palettes.Lerp(p.Sky,       p.Lavender,  0.25);
+            mid = Palettes.Lerp(p.Rosewater, p.Flamingo,  0.30);
+            hor = Palettes.Lerp(p.Peach,     p.Yellow,    0.45);
+        }
         else if (tod == "dusk")
         {
             top = Palettes.Lerp(p.Mantle, p.Mauve, 0.35);
@@ -669,6 +675,11 @@ static class Background
         {
             top = Palettes.Lerp(p.Sky,     p.Teal,     0.4);
             bot = Palettes.Lerp(p.Sapphire, p.Blue,    0.3);
+        }
+        else if (tod == "morning")
+        {
+            top = Palettes.Lerp(p.Rosewater, p.Teal,    0.35);
+            bot = Palettes.Lerp(p.Sapphire,  p.Sky,     0.4);
         }
         else if (tod == "dusk")
         {
@@ -770,7 +781,7 @@ static class WaveFactory
 // Scene orchestrator
 // ---------------------------------------------------------------------------
 
-public sealed class CoastScene
+public sealed class CoastScene : IScene
 {
     readonly StarField         _stars;
     readonly ShootingStarField _shooting;
@@ -794,7 +805,7 @@ public sealed class CoastScene
     {
         _s   = s;
         _p   = Palettes.All.GetValueOrDefault(s.Flavor, Palettes.All["mocha"]);
-        _tod = s.TimeOfDay;
+        _tod = s.EffectiveTimeOfDay;
         _horizonY = h * 0.52;
 
         int starCount = s.StarDensity switch { "sparse" => 75, "dense" => 400, _ => 220 };
@@ -840,10 +851,10 @@ public sealed class CoastScene
         if (_s.ShowRain && _s.WaveSpeed >= 1.8) _rain.Draw(dc);
 
         // 3. Aurora (night/dusk only)
-        if (_s.ShowAurora && _tod != "day") _aurora.Draw(dc);
+        if (_s.ShowAurora && _tod is "night" or "dusk") _aurora.Draw(dc);
 
-        // 4. Stars (fade out at dusk, invisible by day)
-        double starOpacity = _tod switch { "day" => 0.0, "dusk" => 0.25, _ => 1.0 };
+        // 4. Stars (fade out at dusk/morning, invisible by day)
+        double starOpacity = _tod switch { "day" or "morning" => 0.0, "dusk" => 0.25, _ => 1.0 };
         _stars.Draw(dc, starOpacity);
         if (_s.ShowShooting && _tod == "night") _shooting.Draw(dc);
 
@@ -859,7 +870,7 @@ public sealed class CoastScene
 
         // 8. Waves + bioluminescence + foam
         foreach (var wave in _waves) wave.Draw(dc, w, h);
-        if (_s.ShowBio && _tod != "day") _bio.Draw(dc);
+        if (_s.ShowBio && _tod is "night" or "dusk") _bio.Draw(dc);
         _cat.Draw(dc);
         if (_s.ShowFoam) _foam.Draw(dc);
 
