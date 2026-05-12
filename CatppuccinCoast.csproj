@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>catppuccin_coast</AssemblyName>
+    <RootNamespace>CatppuccinCoast</RootNamespace>
+    <Optimize>true</Optimize>
+    <ApplicationIcon />
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="assets\catppuccin_cat.png" LogicalName="assets/catppuccin_cat.png" />
+  </ItemGroup>
+</Project>

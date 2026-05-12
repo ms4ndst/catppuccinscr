@@ -1,0 +1,8 @@
+__pycache__/
+build/
+dist/
+dist_cs/
+obj/
+bin/
+*.spec
+.claude/
