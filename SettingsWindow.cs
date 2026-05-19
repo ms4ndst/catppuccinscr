@@ -21,6 +21,9 @@ public sealed class SettingsWindow : Window
     string _tod, _clockPos, _clockFmt, _starDensity, _waveLayers, _catSize;
     double _waveSpeed;
     bool   _clock, _aurora, _shooting, _foam, _bio, _lighthouse, _rain;
+    bool   _butterflies, _flowers, _birds, _clouds;
+    bool   _sunRays, _balloons, _kites;
+    bool   _palms, _shells, _starfish, _umbrellas, _surfFoam;
 
     public SettingsWindow()
     {
@@ -40,6 +43,18 @@ public sealed class SettingsWindow : Window
         _bio         = _s.ShowBio;
         _lighthouse  = _s.ShowLighthouse;
         _rain        = _s.ShowRain;
+        _butterflies = _s.ShowButterflies;
+        _flowers     = _s.ShowFlowers;
+        _birds       = _s.ShowBirds;
+        _clouds      = _s.ShowClouds;
+        _sunRays     = _s.ShowSunRays;
+        _balloons    = _s.ShowBalloons;
+        _kites       = _s.ShowKites;
+        _palms       = _s.ShowPalms;
+        _shells      = _s.ShowShells;
+        _starfish    = _s.ShowStarfish;
+        _umbrellas   = _s.ShowUmbrellas;
+        _surfFoam    = _s.ShowSurfFoam;
 
         Title         = "Catppuccin Coast — Settings";
         Width         = 600;
@@ -66,8 +81,8 @@ public sealed class SettingsWindow : Window
         root.Children.Add(Divider());
 
         root.Children.Add(Section("SCENE",       ChoiceRow(
-            ["Coast", "Forest", "Peaks", "Lofi"], _scene,
-            ["coast", "forest", "peaks", "lofi"], v => _scene = v)));
+            ["Coast", "Forest", "Peaks", "Lofi", "Meadow", "SummerSky", "GentleBeach"], _scene,
+            ["coast", "forest", "peaks", "lofi", "meadow", "summersky", "gentlebeach"], v => _scene = v)));
         root.Children.Add(Divider());
         root.Children.Add(Section("FLAVOR",      BuildFlavorRow()));
         root.Children.Add(Divider());
@@ -186,6 +201,18 @@ public sealed class SettingsWindow : Window
         Toggle(wrap, "Bioluminescence",    _bio,         v => _bio        = v);
         Toggle(wrap, "Lighthouse & beam",  _lighthouse,  v => _lighthouse = v);
         Toggle(wrap, "Rain (Stormy only)", _rain,        v => _rain       = v);
+        Toggle(wrap, "Butterflies",        _butterflies, v => _butterflies = v);
+        Toggle(wrap, "Wildflowers",        _flowers,     v => _flowers    = v);
+        Toggle(wrap, "Flying birds",       _birds,       v => _birds      = v);
+        Toggle(wrap, "Clouds",             _clouds,      v => _clouds     = v);
+        Toggle(wrap, "Sun rays",           _sunRays,     v => _sunRays    = v);
+        Toggle(wrap, "Hot air balloons",   _balloons,    v => _balloons   = v);
+        Toggle(wrap, "Kites",              _kites,       v => _kites      = v);
+        Toggle(wrap, "Palm trees",         _palms,       v => _palms      = v);
+        Toggle(wrap, "Seashells",          _shells,      v => _shells     = v);
+        Toggle(wrap, "Starfish",           _starfish,    v => _starfish   = v);
+        Toggle(wrap, "Beach umbrellas",    _umbrellas,   v => _umbrellas  = v);
+        Toggle(wrap, "Surf foam",          _surfFoam,    v => _surfFoam   = v);
         return wrap;
     }
 
@@ -310,6 +337,18 @@ public sealed class SettingsWindow : Window
             _s.ShowBio       = _bio;
             _s.ShowLighthouse = _lighthouse;
             _s.ShowRain      = _rain;
+            _s.ShowButterflies = _butterflies;
+            _s.ShowFlowers   = _flowers;
+            _s.ShowBirds     = _birds;
+            _s.ShowClouds    = _clouds;
+            _s.ShowSunRays   = _sunRays;
+            _s.ShowBalloons  = _balloons;
+            _s.ShowKites     = _kites;
+            _s.ShowPalms     = _palms;
+            _s.ShowShells    = _shells;
+            _s.ShowStarfish  = _starfish;
+            _s.ShowUmbrellas = _umbrellas;
+            _s.ShowSurfFoam  = _surfFoam;
             _s.Save();
             Close();
         };
